@@ -8,7 +8,7 @@ const gestor = require('./modules/gestor/gestor');
 
 const app = express();
 
-// Configura CORS
+// Configura CORS gonzalitoefffdffdvd
 app.use(cors({
     origin: 'http://localhost:4200', 
     credentials: true 
