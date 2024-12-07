@@ -85,7 +85,7 @@ function changePassword(email, password) {
                 return reject(new Error("El correo no existe"));
             }
 
-            conexion.query("UPDATE gestor SET contra_ges = ? WHERE contra_ges = ?", [password, email], (error2, result2) => {
+            conexion.query("UPDATE gestor SET contra_ges = ? WHERE correo_ges = ?", [password, email], (error2, result2) => {
                 if (error2) {
                     console.error("Error al actualizar la contraseña:", error2);
                     return reject(new Error("Error al actualizar la contraseña"));
