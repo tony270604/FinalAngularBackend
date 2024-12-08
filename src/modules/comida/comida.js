@@ -34,14 +34,14 @@ router.post('/addFood', upload.single('img'), async function (req, res) {
 });
 
 router.post('/editFood', upload.single('img'), async function (req, res) {
-  const { codcom, name, price, des } = req.body;
+  const { cod_com, name, price, des } = req.body;
   const img = req.file;
   
   // Si la imagen no es proporcionada, pasar 'null' o 'undefined' para que no la actualice
   const imgBuffer = img ? img.buffer : null;
 
   try {
-    const comida = await controlador.editFood(codcom, name, price, des, imgBuffer); 
+    const comida = await controlador.editFood(cod_com, name, price, des, imgBuffer); 
     respuesta.success(req, res, comida, 200);
   } catch (error) {
     console.error('Error al editar la comida:', error.message);

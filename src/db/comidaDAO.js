@@ -52,11 +52,11 @@ function addFood(name, price, des, imgBuffer) {
 }
 
 //Funcion para editar una comida
-function editFood(codcom, name, price, des, imgBuffer) {
+function editFood(cod_com, name, price, des, imgBuffer) {
   return new Promise((resolve, reject) => {
     const conexion = getConexion();
     // Verificar si el cod_com existe
-    conexion.query("SELECT cod_com FROM comida WHERE cod_com = ?", [codcom], (error, result) => {
+    conexion.query("SELECT cod_com FROM comida WHERE cod_com = ?", [cod_com], (error, result) => {
       if (error) {
         console.error("Error al verificar el cod_com:", error);
         return reject(new Error("Error al verificar el cod_com"));
@@ -77,14 +77,14 @@ function editFood(codcom, name, price, des, imgBuffer) {
 
       conexion.query(
         query,
-        [name, des, price, imgBuffer, codcom],
+        [name, des, price, imgBuffer, cod_com],
         (error4, result4) => {
           if (error4) {
             console.error("Error al editar la comida:", error4);
             return reject(new Error("Error al editar la comida"));
           }
-          console.log("Comida editada con éxito:", codcom);
-          resolve({ codcom, name, des, price });
+          console.log("Comida editada con éxito:", cod_com);
+          resolve({ cod_com, name, des, price });
         }
       );
     });
