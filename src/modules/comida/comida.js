@@ -2,7 +2,7 @@ const express = require("express");
 const controlador = require("./cont-comida");
 const respuesta=require('../../respuestas/respuestas');
 const router = express.Router();
-//PAra las imagenes
+//Para las imagenes
 const multer = require('multer');
 const upload = multer();
 
@@ -32,5 +32,22 @@ router.post('/addFood', upload.single('img'), async function (req, res) {
     res.status(400).json({ success: false, message: error.message });
   }
 });
+
+router.post('/editFood', upload.single('img'), async function (req, res) {
+  const { codcom, name, price, des } = req.body;
+  const img = req.file;
+  
+  // Si la imagen no es proporcionada, pasar 'null' o 'undefined' para que no la actualice
+  const imgBuffer = img ? img.buffer : null;
+
+  try {
+    const comida = await controlador.editFood(codcom, name, price, des, imgBuffer); 
+    respuesta.success(req, res, comida, 200);
+  } catch (error) {
+    console.error('Error al editar la comida:', error.message);
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
 
 module.exports = router;

@@ -2,23 +2,23 @@
 const { getConexion } = require('./conexion');
 
 const listarComida = () => {
-    return new Promise((resolve, reject) => {
-        const conexion = getConexion();
-        conexion.query(`SELECT * FROM comida`, (error, result) => {
-            if (error) {
-                return reject(error);
-            }
-            // Convertir los campos binarios (BLOB) a Base64
-            const processedResult = result.map(comida => {
-                if (comida.img1_com) {
-                    comida.img1_com = `data:image/png;base64,${comida.img1_com.toString('base64')}`;
-                }
-                return comida;
-            });
+  return new Promise((resolve, reject) => {
+    const conexion = getConexion();
+    conexion.query(`SELECT * FROM comida`, (error, result) => {
+      if (error) {
+        return reject(error);
+      }
+      // Convertir los campos binarios (BLOB) a Base64
+      const processedResult = result.map(comida => {
+        if (comida.img1_com) {
+          comida.img1_com = `data:image/png;base64,${comida.img1_com.toString('base64')}`;
+        }
+        return comida;
+      });
 
-            resolve(processedResult);
-        });
+      resolve(processedResult);
     });
+  });
 };
 
 // Función para registrar una nueva comida
@@ -51,9 +51,49 @@ function addFood(name, price, des, imgBuffer) {
   });
 }
 
-  
+//Funcion para editar una comida
+function editFood(codcom, name, price, des, imgBuffer) {
+  return new Promise((resolve, reject) => {
+    const conexion = getConexion();
+    // Verificar si el cod_com existe
+    conexion.query("SELECT cod_com FROM comida WHERE cod_com = ?", [codcom], (error, result) => {
+      if (error) {
+        console.error("Error al verificar el cod_com:", error);
+        return reject(new Error("Error al verificar el cod_com"));
+      }
+      if (result.length === 0) {
+        return reject(new Error("El cod_com no existe"));
+      }
+
+      const query = `
+        UPDATE Comida
+        SET 
+          nom_com = COALESCE(NULLIF(?, ''), nom_com),
+          des_com = COALESCE(NULLIF(?, ''), des_com),
+          precio_com = COALESCE(NULLIF(?, ''), precio_com),
+          img1_com = COALESCE(NULLIF(?, ''), img1_com)
+        WHERE cod_com = ?;
+      `;
+
+      conexion.query(
+        query,
+        [name, des, price, imgBuffer, codcom],
+        (error4, result4) => {
+          if (error4) {
+            console.error("Error al editar la comida:", error4);
+            return reject(new Error("Error al editar la comida"));
+          }
+          console.log("Comida editada con éxito:", codcom);
+          resolve({ codcom, name, des, price });
+        }
+      );
+    });
+  });
+}
+
 
 module.exports = {
-    listarComida,
-    addFood,
+  listarComida,
+  addFood,
+  editFood,
 }
