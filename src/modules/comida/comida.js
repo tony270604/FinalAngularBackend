@@ -49,5 +49,15 @@ router.post('/editFood', upload.single('img'), async function (req, res) {
   }
 });
 
+router.post('/deleteFood', async function(req, res) { 
+  const { cod_com} = req.body; 
+  try { 
+      const comida = await controlador.deleteFood(cod_com);
+      respuesta.success(req, res, comida, 200); 
+  } catch (error) { 
+      console.error("Error al eliminar la comida:", error.message); 
+      res.status(400).json({ success: false,message: error.message });
+  }
+});
 
 module.exports = router;

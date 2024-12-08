@@ -91,9 +91,38 @@ function editFood(cod_com, name, price, des, imgBuffer) {
   });
 }
 
-
+//Funcion para eliminar una Comida
+function deleteFood(cod_com) {
+  return new Promise((resolve, reject) => {
+    const conexion = getConexion();
+    // Verificar si el cod_com existe
+    conexion.query("SELECT cod_com FROM comida WHERE cod_com = ?", [cod_com], (error, result) => {
+      if (error) {
+        console.error("Error al verificar el cod_com:", error);
+        return reject(new Error("Error al verificar el cod_com"));
+      }
+      if (result.length === 0) {
+        return reject(new Error("El cod_com no existe"));
+      }
+        conexion.query(
+          "delete from Comida where cod_com=?",
+          [cod_com],
+          (error4, result4) => {
+            if (error4) {
+              console.error("Error al eliminar la comida:", error4);
+              return reject(new Error("Error al eliminar la comida"));
+            }
+            console.log("Comida eliminada con éxito:", cod_com);
+            resolve({ cod_com });
+          }
+        );
+      }
+    );
+  });
+}
 module.exports = {
   listarComida,
   addFood,
   editFood,
+  deleteFood,
 }
