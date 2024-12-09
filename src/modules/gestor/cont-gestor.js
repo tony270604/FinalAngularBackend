@@ -26,6 +26,10 @@ function record(name, number, email, password) {
   return DB.record(name, number, email, password);
 }
 
+function changePassword(email, password){
+  return DB.changePassword(email, password);
+}
+
 // Cierra sesión agregando el token a la lista negra
 function logout(token) {
   blacklistedTokens.add(token);
@@ -42,4 +46,5 @@ module.exports = {
   record,
   logout,
   isTokenBlacklisted,
+  changePassword,
 };
