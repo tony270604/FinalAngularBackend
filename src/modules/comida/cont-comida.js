@@ -1,5 +1,5 @@
 const DB=require('../../db/comidaDAO')
-
+//listado anterior:
 function listarComida(){
     return DB.listarComida();
 }
