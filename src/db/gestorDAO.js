@@ -44,7 +44,7 @@ async function record(name, number, email, password) {
       const [result3] = await conexion
         .promise()
         .query(
-          "SELECT CONCAT('G', LPAD(SUBSTRING(MAX(cod_ges), 2) + 1, 2, '0')) AS new_cod_ges FROM gestor",
+          "SELECT CONCAT('G', LPAD(IFNULL(SUBSTRING(MAX(cod_ges), 2) + 1, 1), 2, '0')) AS new_cod_ges FROM gestor;",
         );
       const newCodGes = result3[0].new_cod_ges;
 
