@@ -37,6 +37,18 @@ router.post("/record", async (req, res) => {
   }
 });
 
+//Ruta para cambiar la contraseña
+router.post('/changePassword', async function(req, res) { 
+  const { email, password } = req.body; 
+  try { 
+      const gestor = await controlador.changePassword(email, password);
+      respuesta.success(req, res, gestor, 200); 
+  } catch (error) { 
+      console.error("Error durante el cambio de contraseña del gestor:", error.message); 
+      res.status(400).json({ success: false,message: error.message });
+  }
+});
+
 // Ruta para cerrar sesión
 router.post("/logout", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];

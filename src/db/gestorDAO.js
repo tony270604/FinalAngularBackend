@@ -2,6 +2,7 @@
 
 const { getConexion } = require("./conexion");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
 
 async function validateLogin(email, password) {
   return new Promise((resolve, reject) => {
@@ -61,7 +62,58 @@ async function record(name, number, email, password) {
   });
 }
 
+//Funcion de cambio de contraseña
+function changePassword(email, password) {
+  return new Promise((resolve, reject) => {
+      const conexion = getConexion();
+
+      conexion.query("SELECT correo_ges FROM gestor WHERE correo_ges = ?", [email], (error, result) => {
+          if (error) {
+              console.error("Error al verificar el correo:", error);
+              return reject(new Error("Error al verificar el correo"));
+          }
+
+          if (result.length === 0) {
+              return reject(new Error("El correo no existe"));
+          }
+
+          conexion.query("UPDATE gestor SET contra_ges = ? WHERE correo_ges = ?", [password, email], (error2, result2) => {
+              if (error2) {
+                  console.error("Error al actualizar la contraseña:", error2);
+                  return reject(new Error("Error al actualizar la contraseña"));
+              }
+
+
+              const transporter = nodemailer.createTransport({
+                  service: 'gmail',
+                  auth: {
+                      user: 'tonyqp2@gmail.com', 
+                      pass: 'uciz ccbo xdnb ydid' 
+                  }
+              });
+
+              const mailOptions = {
+                  from: 'tonyqp2@gmail.com', 
+                  to: email,
+                  subject: 'Cambio de Contraseña',
+                  text: `Su nueva contraseña es: ${password}`
+              };
+
+              transporter.sendMail(mailOptions, (error3, info) => {
+                  if (error3) {
+                      console.error("Error al enviar el correo:", error3); 
+                      return reject(new Error(`Error al enviar el correo`));
+                  }
+              
+                  console.log("Correo enviado:", info.response);
+                  resolve({ success: true, message: "Contraseña cambiada y correo enviado" });
+              });
+          });
+      });
+  });
+}
 module.exports = {
   validateLogin,
   record,
+  changePassword,
 };
