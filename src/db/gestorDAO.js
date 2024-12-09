@@ -62,56 +62,128 @@ async function record(name, number, email, password) {
   });
 }
 
-//Funcion de cambio de contraseña
-function changePassword(email, password) {
-  return new Promise((resolve, reject) => {
-      const conexion = getConexion();
+//Funcion de cambio de contraseña nueva version 
+async function changePassword(email, newPassword) {
+  return new Promise(async (resolve, reject) => {
+    const conexion = getConexion();
 
-      conexion.query("SELECT correo_ges FROM gestor WHERE correo_ges = ?", [email], (error, result) => {
-          if (error) {
-              console.error("Error al verificar el correo:", error);
-              return reject(new Error("Error al verificar el correo"));
-          }
+    try {
+      // Verificar si el correo existe
+      const [result] = await conexion
+        .promise()
+        .query("SELECT correo_ges FROM gestor WHERE correo_ges = ?", [email]);
 
-          if (result.length === 0) {
-              return reject(new Error("El correo no existe"));
-          }
+      if (result.length === 0) {
+        return reject(new Error("El correo no existe"));
+      }
 
-          conexion.query("UPDATE gestor SET contra_ges = ? WHERE correo_ges = ?", [password, email], (error2, result2) => {
-              if (error2) {
-                  console.error("Error al actualizar la contraseña:", error2);
-                  return reject(new Error("Error al actualizar la contraseña"));
-              }
+      // Encriptar la nueva contraseña
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
 
+      // Actualizar la contraseña en la base de datos
+      await conexion
+        .promise()
+        .query("UPDATE gestor SET contra_ges = ? WHERE correo_ges = ?", [
+          hashedPassword,
+          email,
+        ]);
 
-              const transporter = nodemailer.createTransport({
-                  service: 'gmail',
-                  auth: {
-                      user: 'tonyqp2@gmail.com', 
-                      pass: 'uciz ccbo xdnb ydid' 
-                  }
-              });
-
-              const mailOptions = {
-                  from: 'tonyqp2@gmail.com', 
-                  to: email,
-                  subject: 'Cambio de Contraseña',
-                  text: `Su nueva contraseña es: ${password}`
-              };
-
-              transporter.sendMail(mailOptions, (error3, info) => {
-                  if (error3) {
-                      console.error("Error al enviar el correo:", error3); 
-                      return reject(new Error(`Error al enviar el correo`));
-                  }
-              
-                  console.log("Correo enviado:", info.response);
-                  resolve({ success: true, message: "Contraseña cambiada y correo enviado" });
-              });
-          });
+      // Configuración del correo electrónico
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
       });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Cambio de Contraseña",
+        text: `Su nueva contraseña es: ${newPassword}`,
+      };
+
+      // Enviar el correo
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error al enviar el correo:", error);
+          return reject(
+            new Error(`Error al enviar el correo: ${error.message}`),
+          );
+        }
+
+        console.log("Correo enviado:", info.response);
+        resolve({
+          success: true,
+          message: "Contraseña cambiada y correo enviado",
+        });
+      });
+    } catch (error) {
+      reject(new Error("Error al cambiar la contraseña: " + error.message));
+    }
   });
 }
+
+/*function changePassword(email, password) {
+  return new Promise((resolve, reject) => {
+    const conexion = getConexion();
+
+    conexion.query(
+      "SELECT correo_ges FROM gestor WHERE correo_ges = ?",
+      [email],
+      (error, result) => {
+        if (error) {
+          console.error("Error al verificar el correo:", error);
+          return reject(new Error("Error al verificar el correo"));
+        }
+
+        if (result.length === 0) {
+          return reject(new Error("El correo no existe"));
+        }
+
+        conexion.query(
+          "UPDATE gestor SET contra_ges = ? WHERE correo_ges = ?",
+          [password, email],
+          (error2, result2) => {
+            if (error2) {
+              console.error("Error al actualizar la contraseña:", error2);
+              return reject(new Error("Error al actualizar la contraseña"));
+            }
+
+            const transporter = nodemailer.createTransport({
+              service: "gmail",
+              auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+              },
+            });
+
+            const mailOptions = {
+              from: "tonyqp2@gmail.com",
+              to: email,
+              subject: "Cambio de Contraseña",
+              text: `Su nueva contraseña es: ${password}`,
+            };
+
+            transporter.sendMail(mailOptions, (error3, info) => {
+              if (error3) {
+                console.error("Error al enviar el correo:", error3);
+                return reject(new Error(`Error al enviar el correo`));
+              }
+
+              console.log("Correo enviado:", info.response);
+              resolve({
+                success: true,
+                message: "Contraseña cambiada y correo enviado",
+              });
+            });
+          },
+        );
+      },
+    );
+  });
+}*/
 module.exports = {
   validateLogin,
   record,
