@@ -21,7 +21,7 @@ async function validateLogin(email, password) {
   return { gestor, token };
 }
 
-// Registra un nuevo usuario
+// Registra un nuevo usuarios zzzzz
 function record(name, number, email, password) {
   return DB.record(name, number, email, password);
 }
