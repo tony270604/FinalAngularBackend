@@ -1,7 +1,7 @@
 //Importar la funcion conexcion
 const { getConexion } = require('./conexion');
 //listado anterior sin filtros
-/*const listarComida = () => {
+const listarComida = () => {
   return new Promise((resolve, reject) => {
     const conexion = getConexion();
     conexion.query(`SELECT * FROM comida`, (error, result) => {
@@ -19,8 +19,9 @@ const { getConexion } = require('./conexion');
       resolve(processedResult);
     });
   });
-};*/
-//nuevo listado con filtros 
+};
+//nuevo listado con filtros
+/*
 const listarComida = (search) => {
   return new Promise((resolve, reject) => {
     const conexion = getConexion();
@@ -47,7 +48,7 @@ const listarComida = (search) => {
       resolve(processedResult);
     });
   });
-};
+};*/
 
 // Función para registrar una nueva comida
 function addFood(name, price, des, imgBuffer) {

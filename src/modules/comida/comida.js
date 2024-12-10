@@ -6,15 +6,16 @@ const router = express.Router();
 const multer = require('multer');
 const upload = multer();
 //version anterior
-/*router.get("/listarcomida", async function (req, res) {
+router.get("/listarcomida", async function (req, res) {
   try {
     const items = await controlador.listarComida();
     res.status(200).json(items);
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
-});*/
+});
 //nueva version
+/*
 router.get("/listarcomida", async (req, res) => {
   try {
     const search = req.query.search;
@@ -23,7 +24,7 @@ router.get("/listarcomida", async (req, res) => {
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
-});
+});*/
 
 router.post('/addFood', upload.single('img'), async function (req, res) {
   const { name, price, des } = req.body;

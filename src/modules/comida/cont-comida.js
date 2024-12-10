@@ -3,7 +3,7 @@ const DB=require('../../db/comidaDAO')
 function listarComida(){
     return DB.listarComida();
 }
-//sasfasfa
+
 
 function addFood(name, price, des, img){
     return DB.addFood(name, price, des, img);
