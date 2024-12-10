@@ -1,6 +1,6 @@
 //Importar la funcion conexcion
 const { getConexion } = require('./conexion');
-
+//listado anterior sin filtros
 const listarComida = () => {
   return new Promise((resolve, reject) => {
     const conexion = getConexion();
@@ -20,6 +20,35 @@ const listarComida = () => {
     });
   });
 };
+//nuevo listado con filtros
+/*
+const listarComida = (search) => {
+  return new Promise((resolve, reject) => {
+    const conexion = getConexion();
+
+    let query = `SELECT * FROM comida`;
+    if (search) {
+      query += ` WHERE nom_com LIKE ? OR nom_ing LIKE ? OR nom_cat LIKE ?`;
+    }
+
+    const params = search ? [`%${search}%`, `%${search}%`, `%${search}%`] : [];
+
+    conexion.query(query, params, (error, result) => {
+      if (error) {
+        return reject(error);
+      }
+
+      const processedResult = result.map((comida) => {
+        if (comida.img1_com) {
+          comida.img1_com = `data:image/png;base64,${comida.img1_com.toString('base64')}`;
+        }
+        return comida;
+      });
+
+      resolve(processedResult);
+    });
+  });
+};*/
 
 // Función para registrar una nueva comida
 function addFood(name, price, des, imgBuffer) {
